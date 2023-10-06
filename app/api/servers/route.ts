@@ -7,11 +7,11 @@ import { db } from "@/lib/db";
 
 export async function POST(req: Request) {
   try {
-    const {name, imageUrl} = await req.json();
+    const { name, imageUrl } = await req.json();
     const profile = await currentProfile();
 
     if (!profile) {
-      return new NextResponse("Unauthorized", {status: 401});
+      return new NextResponse("Unauthorized", { status: 401 });
     }
 
     const server = await db.server.create({
@@ -22,12 +22,12 @@ export async function POST(req: Request) {
         inviteCode: uuidv4(),
         channels: {
           create: [
-            {name: "general", profileId: profile.id}
+            { name: "general", profileId: profile.id }
           ]
         },
         members: {
           create: [
-            {profileId: profile.id, role: MemberRole.ADMIN}
+            { profileId: profile.id, role: MemberRole.ADMIN }
           ]
         }
       }
@@ -36,6 +36,6 @@ export async function POST(req: Request) {
     return NextResponse.json(server);
   } catch (error) {
     console.log("[SERVERS_POST]", error);
-    return new NextResponse("Internal Error", {status: 500});
+    return new NextResponse("Internal Error", { status: 500 });
   }
 }

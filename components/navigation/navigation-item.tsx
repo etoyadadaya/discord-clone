@@ -1,17 +1,22 @@
 "use client";
 
-import {ActionTooltip} from "@/components/action-tooltip";
-import {cn} from "@/lib/utils";
-import {useParams, useRouter} from "next/navigation";
 import Image from "next/image";
+import { useParams, useRouter } from "next/navigation";
+
+import { cn } from "@/lib/utils";
+import { ActionTooltip } from "@/components/action-tooltip";
 
 interface NavigationItemProps {
   id: string;
   imageUrl: string;
   name: string;
-}
+};
 
-export const NavigationItem = ({ id, name, imageUrl }: NavigationItemProps) => {
+export const NavigationItem = ({
+  id,
+  imageUrl,
+  name
+}: NavigationItemProps) => {
   const params = useParams();
   const router = useRouter();
 
@@ -46,6 +51,5 @@ export const NavigationItem = ({ id, name, imageUrl }: NavigationItemProps) => {
         </div>
       </button>
     </ActionTooltip>
-
-  );
-};
+  )
+}
