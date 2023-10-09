@@ -1,7 +1,7 @@
 "use client";
 
-import qs from "query-string";
 import axios from "axios";
+import qs from "query-string";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -61,7 +61,7 @@ export const MessageFileModal = () => {
 
       await axios.post(url, {
         ...values,
-        content: values.fileUrl
+        content: values.fileUrl,
       });
 
       form.reset();

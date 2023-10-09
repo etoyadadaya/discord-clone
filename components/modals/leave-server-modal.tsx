@@ -1,21 +1,23 @@
 "use client";
 
+import axios from "axios";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 import {
   Dialog,
-  DialogContent, DialogDescription, DialogFooter,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useModal } from "@/hooks/use-modal-store";
 import { Button } from "@/components/ui/button";
-import axios from "axios";
-import {useRouter} from "next/navigation";
 
 export const LeaveServerModal = () => {
-  const router = useRouter();
   const { isOpen, onClose, type, data } = useModal();
+  const router = useRouter();
 
   const isModalOpen = isOpen && type === "leaveServer";
   const { server } = data;
@@ -31,8 +33,8 @@ export const LeaveServerModal = () => {
       onClose();
       router.refresh();
       router.push("/");
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
     } finally {
       setIsLoading(false);
     }
@@ -43,7 +45,7 @@ export const LeaveServerModal = () => {
       <DialogContent className="bg-white text-black p-0 overflow-hidden">
         <DialogHeader className="pt-8 px-6">
           <DialogTitle className="text-2xl text-center font-bold">
-            Leave server
+            Leave Server
           </DialogTitle>
           <DialogDescription className="text-center text-zinc-500">
             Are you sure you want to leave <span className="font-semibold text-indigo-500">{server?.name}</span>?
@@ -53,8 +55,8 @@ export const LeaveServerModal = () => {
           <div className="flex items-center justify-between w-full">
             <Button
               disabled={isLoading}
-              variant="ghost"
               onClick={onClose}
+              variant="ghost"
             >
               Cancel
             </Button>

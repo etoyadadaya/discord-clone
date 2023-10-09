@@ -1,9 +1,13 @@
-import {currentProfile} from "@/lib/current-profile";
-import {NextResponse} from "next/server";
-import {db} from "@/lib/db";
-import {MemberRole} from "@prisma/client";
+import { NextResponse } from "next/server";
+import { MemberRole } from "@prisma/client";
 
-export async function DELETE(req: Request, { params }: { params: { channelId: string } }) {
+import { currentProfile } from "@/lib/current-profile";
+import { db } from "@/lib/db";
+
+export async function DELETE(
+  req: Request,
+  { params }: { params: { channelId: string } }
+) {
   try {
     const profile = await currentProfile();
     const { searchParams } = new URL(req.url);
@@ -15,11 +19,11 @@ export async function DELETE(req: Request, { params }: { params: { channelId: st
     }
 
     if (!serverId) {
-      return new NextResponse("Server ID Missing", { status: 400 });
+      return new NextResponse("Server ID missing", { status: 400 });
     }
 
     if (!params.channelId) {
-      return new NextResponse("Channel ID Missing", { status: 400 });
+      return new NextResponse("Channel ID missing", { status: 400 });
     }
 
     const server = await db.server.update({
@@ -30,9 +34,9 @@ export async function DELETE(req: Request, { params }: { params: { channelId: st
             profileId: profile.id,
             role: {
               in: [MemberRole.ADMIN, MemberRole.MODERATOR],
-            },
-          },
-        },
+            }
+          }
+        }
       },
       data: {
         channels: {
@@ -40,20 +44,23 @@ export async function DELETE(req: Request, { params }: { params: { channelId: st
             id: params.channelId,
             name: {
               not: "general",
-            },
-          },
-        },
-      },
+            }
+          }
+        }
+      }
     });
 
     return NextResponse.json(server);
-  } catch (err) {
-    console.log("[CHANNEL_ID_DELETE]", err);
+  } catch (error) {
+    console.log("[CHANNEL_ID_DELETE]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }
 
-export async function PATCH(req: Request, { params }: { params: { channelId: string } }) {
+export async function PATCH(
+  req: Request,
+  { params }: { params: { channelId: string } }
+) {
   try {
     const profile = await currentProfile();
     const { name, type } = await req.json();
@@ -66,15 +73,15 @@ export async function PATCH(req: Request, { params }: { params: { channelId: str
     }
 
     if (!serverId) {
-      return new NextResponse("Server ID Missing", { status: 400 });
+      return new NextResponse("Server ID missing", { status: 400 });
     }
 
     if (!params.channelId) {
-      return new NextResponse("Channel ID Missing", { status: 400 });
+      return new NextResponse("Channel ID missing", { status: 400 });
     }
 
     if (name === "general") {
-      return new NextResponse("Name cannot be 'general'");
+      return new NextResponse("Name cannot be 'general'", { status: 400 });
     }
 
     const server = await db.server.update({
@@ -85,9 +92,9 @@ export async function PATCH(req: Request, { params }: { params: { channelId: str
             profileId: profile.id,
             role: {
               in: [MemberRole.ADMIN, MemberRole.MODERATOR],
-            },
-          },
-        },
+            }
+          }
+        }
       },
       data: {
         channels: {
@@ -101,15 +108,15 @@ export async function PATCH(req: Request, { params }: { params: { channelId: str
             data: {
               name,
               type,
-            },
-          },
-        },
-      },
+            }
+          }
+        }
+      }
     });
 
     return NextResponse.json(server);
-  } catch (err) {
-    console.log("[CHANNEL_ID_PATCH]", err);
+  } catch (error) {
+    console.log("[CHANNEL_ID_PATCH]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }

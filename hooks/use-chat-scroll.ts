@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 
 type ChatScrollProps = {
   chatRef: React.RefObject<HTMLDivElement>;
@@ -8,7 +8,13 @@ type ChatScrollProps = {
   count: number;
 };
 
-export const useChatScroll = ({ chatRef, bottomRef, count, shouldLoadMore, loadMore }: ChatScrollProps) => {
+export const useChatScroll = ({
+  chatRef,
+  bottomRef,
+  shouldLoadMore,
+  loadMore,
+  count,
+}: ChatScrollProps) => {
   const [hasInitialized, setHasInitialized] = useState(false);
 
   useEffect(() => {
@@ -18,7 +24,7 @@ export const useChatScroll = ({ chatRef, bottomRef, count, shouldLoadMore, loadM
       const scrollTop = topDiv?.scrollTop;
 
       if (scrollTop === 0 && shouldLoadMore) {
-        loadMore();
+        loadMore()
       }
     };
 
@@ -32,7 +38,7 @@ export const useChatScroll = ({ chatRef, bottomRef, count, shouldLoadMore, loadM
   useEffect(() => {
     const bottomDiv = bottomRef?.current;
     const topDiv = chatRef.current;
-    const shouldAuthScroll = () => {
+    const shouldAutoScroll = () => {
       if (!hasInitialized && bottomDiv) {
         setHasInitialized(true);
         return true;
@@ -46,12 +52,12 @@ export const useChatScroll = ({ chatRef, bottomRef, count, shouldLoadMore, loadM
       return distanceFromBottom <= 100;
     }
 
-    if (shouldAuthScroll()) {
+    if (shouldAutoScroll()) {
       setTimeout(() => {
         bottomRef.current?.scrollIntoView({
           behavior: "smooth",
         });
       }, 100);
     }
-  }, [bottomRef, count, chatRef, hasInitialized]);
+  }, [bottomRef, chatRef, count, hasInitialized]);
 }

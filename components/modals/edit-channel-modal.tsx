@@ -5,6 +5,7 @@ import axios from "axios";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { ChannelType } from "@prisma/client";
 
 import {
   Dialog,
@@ -23,11 +24,16 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {useParams, useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useModal } from "@/hooks/use-modal-store";
-import {ChannelType} from "@prisma/client";
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
-import {useEffect} from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select";
+import { useEffect } from "react";
 
 const formSchema = z.object({
   name: z.string().min(1, {
@@ -38,16 +44,16 @@ const formSchema = z.object({
       message: "Channel name cannot be 'general'"
     }
   ),
-  type: z.nativeEnum(ChannelType),
+  type: z.nativeEnum(ChannelType)
 });
 
 export const EditChannelModal = () => {
-  const { isOpen, onClose, type, data} = useModal();
+  const { isOpen, onClose, type, data } = useModal();
   const router = useRouter();
 
   const isModalOpen = isOpen && type === "editChannel";
   const { channel, server } = data;
-
+ 
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -56,23 +62,23 @@ export const EditChannelModal = () => {
     }
   });
 
-  const isLoading = form.formState.isSubmitting;
-
   useEffect(() => {
-    if (channel) {
-      form.setValue("name", channel.name);
-      form.setValue("type", channel.type);
-    }
-  }, [channel, form]);
+   if (channel) {
+    form.setValue("name", channel.name);
+    form.setValue("type", channel.type);
+   }
+  }, [form, channel]);
+
+  const isLoading = form.formState.isSubmitting;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       const url = qs.stringifyUrl({
         url: `/api/channels/${channel?.id}`,
         query: {
-          serverId: server?.id,
-        },
-      })
+          serverId: server?.id
+        }
+      });
       await axios.patch(url, values);
 
       form.reset();
@@ -93,7 +99,7 @@ export const EditChannelModal = () => {
       <DialogContent className="bg-white text-black p-0 overflow-hidden">
         <DialogHeader className="pt-8 px-6">
           <DialogTitle className="text-2xl text-center font-bold">
-            Edit channel
+            Edit Channel
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>

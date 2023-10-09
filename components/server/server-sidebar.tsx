@@ -1,17 +1,17 @@
-import {ChannelType, MemberRole} from "@prisma/client";
+import { ChannelType, MemberRole } from "@prisma/client";
 import { redirect } from "next/navigation";
+import { Hash, Mic, ShieldAlert, ShieldCheck, Video } from "lucide-react";
 
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
 
 import { ServerHeader } from "./server-header";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { ServerSearch } from "@/components/server/server-search";
-import { Hash, Mic, ShieldAlert, ShieldCheck, Video } from "lucide-react";
-import {Separator} from "@/components/ui/separator";
-import {ServerSection} from "@/components/server/server-section";
-import {ServerChannel} from "@/components/server/server-channel";
-import {ServerMember} from "@/components/server/server-member";
+import { ServerSearch } from "./server-search";
+import { ServerSection } from "./server-section";
+import { ServerChannel } from "./server-channel";
+import { ServerMember } from "./server-member";
 
 interface ServerSidebarProps {
   serverId: string;
@@ -20,13 +20,13 @@ interface ServerSidebarProps {
 const iconMap = {
   [ChannelType.TEXT]: <Hash className="mr-2 h-4 w-4" />,
   [ChannelType.AUDIO]: <Mic className="mr-2 h-4 w-4" />,
-  [ChannelType.VIDEO]: <Video className="mr-2 h-4 w-4" />,
-}
+  [ChannelType.VIDEO]: <Video className="mr-2 h-4 w-4" />
+};
 
 const roleIconMap = {
   [MemberRole.GUEST]: null,
   [MemberRole.MODERATOR]: <ShieldCheck className="h-4 w-4 mr-2 text-indigo-500" />,
-  [MemberRole.ADMIN]: <ShieldAlert className="h-4 w-4 mr-2 text-rose-500" />,
+  [MemberRole.ADMIN]: <ShieldAlert className="h-4 w-4 mr-2 text-rose-500" />
 }
 
 export const ServerSidebar = async ({
@@ -149,14 +149,14 @@ export const ServerSidebar = async ({
               label="Voice Channels"
             />
             <div className="space-y-[2px]">
-            {audioChannels.map((channel) => (
-              <ServerChannel
-                key={channel.id}
-                channel={channel}
-                role={role}
-                server={server}
-              />
-            ))}
+              {audioChannels.map((channel) => (
+                <ServerChannel
+                  key={channel.id}
+                  channel={channel}
+                  role={role}
+                  server={server}
+                />
+              ))}
             </div>
           </div>
         )}
@@ -169,14 +169,14 @@ export const ServerSidebar = async ({
               label="Video Channels"
             />
             <div className="space-y-[2px]">
-            {videoChannels.map((channel) => (
-              <ServerChannel
-                key={channel.id}
-                channel={channel}
-                role={role}
-                server={server}
-              />
-            ))}
+              {videoChannels.map((channel) => (
+                <ServerChannel
+                  key={channel.id}
+                  channel={channel}
+                  role={role}
+                  server={server}
+                />
+              ))}
             </div>
           </div>
         )}
@@ -189,13 +189,13 @@ export const ServerSidebar = async ({
               server={server}
             />
             <div className="space-y-[2px]">
-            {members.map((member) => (
-             <ServerMember
-              key={member.id}
-              member={member}
-              server={server}
-             />
-            ))}
+              {members.map((member) => (
+                <ServerMember
+                  key={member.id}
+                  member={member}
+                  server={server}
+                />
+              ))}
             </div>
           </div>
         )}

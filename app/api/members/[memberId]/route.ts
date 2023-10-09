@@ -3,7 +3,10 @@ import { NextResponse } from "next/server";
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
 
-export async function DELETE(req: Request, { params }: { params: { memberId: string } }) {
+export async function DELETE(
+  req: Request,
+  { params }: { params: { memberId: string } }
+) {
   try {
     const profile = await currentProfile();
     const { searchParams } = new URL(req.url);
@@ -11,15 +14,15 @@ export async function DELETE(req: Request, { params }: { params: { memberId: str
     const serverId = searchParams.get("serverId");
 
     if (!profile) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return new NextResponse("Unauthorized" ,{ status: 401 });
     }
 
     if (!serverId) {
-      return new NextResponse("Server ID Missing", { status: 400 });
+      return new NextResponse("Server ID missing", { status: 400 });
     }
 
     if (!params.memberId) {
-      return new NextResponse("Member ID Missing", { status: 400 });
+      return new NextResponse("Member ID missing", { status: 400 });
     }
 
     const server = await db.server.update({
@@ -32,10 +35,10 @@ export async function DELETE(req: Request, { params }: { params: { memberId: str
           deleteMany: {
             id: params.memberId,
             profileId: {
-              not: profile.id,
-            },
-          },
-        },
+              not: profile.id
+            }
+          }
+        }
       },
       include: {
         members: {
@@ -44,19 +47,22 @@ export async function DELETE(req: Request, { params }: { params: { memberId: str
           },
           orderBy: {
             role: "asc",
-          },
+          }
         },
       },
     });
 
     return NextResponse.json(server);
-  } catch (err) {
-    console.log("[MEMBER_ID_DELETE]", err);
+  } catch (error) {
+    console.log("[MEMBER_ID_DELETE]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }
 
-export async function PATCH(req: Request, { params }: { params: { memberId: string } }) {
+export async function PATCH(
+  req: Request,
+  { params }: { params: { memberId: string } }
+) {
   try {
     const profile = await currentProfile();
     const { searchParams } = new URL(req.url);
@@ -69,11 +75,11 @@ export async function PATCH(req: Request, { params }: { params: { memberId: stri
     }
 
     if (!serverId) {
-      return new NextResponse("Server ID Missing", { status: 400 });
+      return new NextResponse("Server ID missing", { status: 400 });
     }
 
     if (!params.memberId) {
-      return new NextResponse("Member ID Missing", { status: 400 });
+      return new NextResponse("Member ID missing", { status: 400 });
     }
 
     const server = await db.server.update({
@@ -87,14 +93,14 @@ export async function PATCH(req: Request, { params }: { params: { memberId: stri
             where: {
               id: params.memberId,
               profileId: {
-                not: profile.id,
-              },
+                not: profile.id
+              }
             },
             data: {
-              role,
+              role
             }
-          },
-        },
+          }
+        }
       },
       include: {
         members: {
@@ -102,15 +108,15 @@ export async function PATCH(req: Request, { params }: { params: { memberId: stri
             profile: true,
           },
           orderBy: {
-            role: "asc",
-          },
-        },
-      },
+            role: "asc"
+          }
+        }
+      }
     });
 
     return NextResponse.json(server);
-  } catch (err) {
-    console.log("[MEMBERS_ID_PATCH]", err);
+  } catch (error) {
+    console.log("[MEMBERS_ID_PATCH]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }

@@ -1,11 +1,14 @@
-import {NextResponse} from "next/server";
-import {currentProfile} from "@/lib/current-profile";
-import {db} from "@/lib/db";
-import {DirectMessage} from "@prisma/client";
+import { NextResponse } from "next/server";
+import { DirectMessage } from "@prisma/client";
+
+import { currentProfile } from "@/lib/current-profile";
+import { db } from "@/lib/db";
 
 const MESSAGES_BATCH = 10;
 
-export async function GET(req: Request) {
+export async function GET(
+  req: Request
+) {
   try {
     const profile = await currentProfile();
     const { searchParams } = new URL(req.url);
@@ -16,9 +19,9 @@ export async function GET(req: Request) {
     if (!profile) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
-
+  
     if (!conversationId) {
-      return new NextResponse("Conversation ID Missing", { status: 400 });
+      return new NextResponse("Conversation ID missing", { status: 400 });
     }
 
     let messages: DirectMessage[] = [];
@@ -37,13 +40,13 @@ export async function GET(req: Request) {
           member: {
             include: {
               profile: true,
-            },
-          },
+            }
+          }
         },
         orderBy: {
           createdAt: "desc",
         }
-      });
+      })
     } else {
       messages = await db.directMessage.findMany({
         take: MESSAGES_BATCH,
@@ -54,12 +57,12 @@ export async function GET(req: Request) {
           member: {
             include: {
               profile: true,
-            },
-          },
+            }
+          }
         },
         orderBy: {
           createdAt: "desc",
-        },
+        }
       });
     }
 
@@ -72,9 +75,9 @@ export async function GET(req: Request) {
     return NextResponse.json({
       items: messages,
       nextCursor
-    })
-  } catch (err) {
-    console.log("[DIRECT-MESSAGES_GET]", err);
+    });
+  } catch (error) {
+    console.log("[DIRECT_MESSAGES_GET]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }

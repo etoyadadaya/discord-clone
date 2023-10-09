@@ -1,21 +1,23 @@
 "use client";
 
+import axios from "axios";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 import {
   Dialog,
-  DialogContent, DialogDescription, DialogFooter,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useModal } from "@/hooks/use-modal-store";
 import { Button } from "@/components/ui/button";
-import axios from "axios";
-import {useRouter} from "next/navigation";
 
 export const DeleteServerModal = () => {
-  const router = useRouter();
   const { isOpen, onClose, type, data } = useModal();
+  const router = useRouter();
 
   const isModalOpen = isOpen && type === "deleteServer";
   const { server } = data;
@@ -31,8 +33,8 @@ export const DeleteServerModal = () => {
       onClose();
       router.refresh();
       router.push("/");
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
     } finally {
       setIsLoading(false);
     }
@@ -47,15 +49,15 @@ export const DeleteServerModal = () => {
           </DialogTitle>
           <DialogDescription className="text-center text-zinc-500">
             Are you sure you want to do this? <br />
-            <span className="text-indigo-500 font-semibold">{server?.name}</span> will be permanently deleted
+            <span className="text-indigo-500 font-semibold">{server?.name}</span> will be permanently deleted.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="bg-gray-100 px-6 py-4">
           <div className="flex items-center justify-between w-full">
             <Button
               disabled={isLoading}
-              variant="ghost"
               onClick={onClose}
+              variant="ghost"
             >
               Cancel
             </Button>

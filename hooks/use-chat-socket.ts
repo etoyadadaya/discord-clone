@@ -1,7 +1,8 @@
-import {useSocket} from "@/components/providers/socket-provider";
-import {useQueryClient} from "@tanstack/react-query";
-import {useEffect} from "react";
-import {Member, Message, Profile} from "@prisma/client";
+import { useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { Member, Message, Profile } from "@prisma/client";
+
+import { useSocket } from "@/components/providers/socket-provider";
 
 type ChatSocketProps = {
   addKey: string;
@@ -11,17 +12,21 @@ type ChatSocketProps = {
 
 type MessageWithMemberWithProfile = Message & {
   member: Member & {
-    profile: Profile,
-  },
-};
+    profile: Profile;
+  }
+}
 
-export const useChatSocket = ({ addKey, updateKey, queryKey }: ChatSocketProps) => {
+export const useChatSocket = ({
+  addKey,
+  updateKey,
+  queryKey
+}: ChatSocketProps) => {
   const { socket } = useSocket();
   const queryClient = useQueryClient();
 
   useEffect(() => {
     if (!socket) {
-      return
+      return;
     }
 
     socket.on(updateKey, (message: MessageWithMemberWithProfile) => {
@@ -46,7 +51,7 @@ export const useChatSocket = ({ addKey, updateKey, queryKey }: ChatSocketProps) 
           ...oldData,
           pages: newData,
         }
-      });
+      })
     });
 
     socket.on(addKey, (message: MessageWithMemberWithProfile) => {
@@ -65,14 +70,14 @@ export const useChatSocket = ({ addKey, updateKey, queryKey }: ChatSocketProps) 
           ...newData[0],
           items: [
             message,
-            ...newData[0].items
+            ...newData[0].items,
           ]
-        }
+        };
 
         return {
           ...oldData,
           pages: newData,
-        }
+        };
       });
     });
 

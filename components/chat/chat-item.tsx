@@ -1,22 +1,28 @@
 "use client";
 
 import * as z from "zod";
-import {Member, MemberRole, Profile} from "@prisma/client";
-import {UserAvatar} from "@/components/user-avatar";
-import {ActionTooltip} from "@/components/action-tooltip";
-import {Edit, FileIcon, ShieldAlert, ShieldCheck, Trash, X} from "lucide-react";
-import Image from "next/image";
-import {useEffect, useState} from "react";
-import {cn} from "@/lib/utils";
-import {useForm} from "react-hook-form";
-import {zodResolver} from "@hookform/resolvers/zod";
-import {Form, FormControl, FormField, FormItem} from "@/components/ui/form";
-import {Input} from "@/components/ui/input";
-import {Button} from "@/components/ui/button";
-import qs from "query-string";
 import axios from "axios";
-import {useModal} from "@/hooks/use-modal-store";
-import {useParams, useRouter} from "next/navigation";
+import qs from "query-string";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Member, MemberRole, Profile } from "@prisma/client";
+import { Edit, FileIcon, ShieldAlert, ShieldCheck, Trash } from "lucide-react";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import { useRouter, useParams } from "next/navigation";
+
+import { UserAvatar } from "@/components/user-avatar";
+import { ActionTooltip } from "@/components/action-tooltip";
+import { cn } from "@/lib/utils";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useModal } from "@/hooks/use-modal-store";
 
 interface ChatItemProps {
   id: string;
@@ -31,7 +37,7 @@ interface ChatItemProps {
   isUpdated: boolean;
   socketUrl: string;
   socketQuery: Record<string, string>;
-}
+};
 
 const roleIconMap = {
   "GUEST": null,
@@ -43,37 +49,48 @@ const formSchema = z.object({
   content: z.string().min(1),
 });
 
-export const ChatItem = ({ id, content, currentMember, member, deleted, socketQuery, socketUrl, fileUrl, isUpdated, timestamp }: ChatItemProps) => {
+export const ChatItem = ({
+  id,
+  content,
+  member,
+  timestamp,
+  fileUrl,
+  deleted,
+  currentMember,
+  isUpdated,
+  socketUrl,
+  socketQuery
+}: ChatItemProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const { onOpen } = useModal();
-  const router = useRouter()
   const params = useParams();
+  const router = useRouter();
 
   const onMemberClick = () => {
     if (member.id === currentMember.id) {
       return;
     }
-
+  
     router.push(`/servers/${params?.serverId}/conversations/${member.id}`);
   }
 
   useEffect(() => {
-    const handleKeyDown = (e: any) => {
-      if (e.key === "Escape" || e.keyCode === 27) {
+    const handleKeyDown = (event: any) => {
+      if (event.key === "Escape" || event.keyCode === 27) {
         setIsEditing(false);
       }
-    }
+    };
 
     window.addEventListener("keydown", handleKeyDown);
 
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keyDown", handleKeyDown);
   }, []);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      content: content,
-    },
+      content: content
+    }
   });
 
   const isLoading = form.formState.isSubmitting;
@@ -82,21 +99,22 @@ export const ChatItem = ({ id, content, currentMember, member, deleted, socketQu
     try {
       const url = qs.stringifyUrl({
         url: `${socketUrl}/${id}`,
-        query: socketQuery
+        query: socketQuery,
       });
 
       await axios.patch(url, values);
+
       form.reset();
       setIsEditing(false);
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
     }
   }
 
   useEffect(() => {
     form.reset({
       content: content,
-    });
+    })
   }, [content]);
 
   const fileType = fileUrl?.split(".").pop();
@@ -130,7 +148,7 @@ export const ChatItem = ({ id, content, currentMember, member, deleted, socketQu
             </span>
           </div>
           {isImage && (
-            <a
+            <a 
               href={fileUrl}
               target="_blank"
               rel="noopener noreferrer"
@@ -147,10 +165,10 @@ export const ChatItem = ({ id, content, currentMember, member, deleted, socketQu
           {isPDF && (
             <div className="relative flex items-center p-2 mt-2 rounded-md bg-background/10">
               <FileIcon className="h-10 w-10 fill-indigo-200 stroke-indigo-400" />
-              <a
+              <a 
                 href={fileUrl}
                 target="_blank"
-                rel="noopener norefenner"
+                rel="noopener noreferrer"
                 className="ml-2 text-sm text-indigo-500 dark:text-indigo-400 hover:underline"
               >
                 PDF File
@@ -172,31 +190,30 @@ export const ChatItem = ({ id, content, currentMember, member, deleted, socketQu
           )}
           {!fileUrl && isEditing && (
             <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
+              <form 
                 className="flex items-center w-full gap-x-2 pt-2"
-              >
-                <FormField
-                  control={form.control}
-                  name="content"
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormControl>
-                        <div className="relative w-full">
-                          <Input
-                            disabled={isLoading}
-                            className="p-2 bg-zinc-200/90 dark:bg-zinc-700/75 border/none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-200"
-                            placeholder="Edited message"
-                            {...field}
-                          />
-                        </div>
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-                <Button disabled={isLoading} size="sm" variant="primary">
-                  Save
-                </Button>
+                onSubmit={form.handleSubmit(onSubmit)}>
+                  <FormField
+                    control={form.control}
+                    name="content"
+                    render={({ field }) => (
+                      <FormItem className="flex-1">
+                        <FormControl>
+                          <div className="relative w-full">
+                            <Input
+                              disabled={isLoading}
+                              className="p-2 bg-zinc-200/90 dark:bg-zinc-700/75 border-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-200"
+                              placeholder="Edited message"
+                              {...field}
+                            />
+                          </div>
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <Button disabled={isLoading} size="sm" variant="primary">
+                    Save
+                  </Button>
               </form>
               <span className="text-[10px] mt-1 text-zinc-400">
                 Press escape to cancel, enter to save
@@ -211,20 +228,21 @@ export const ChatItem = ({ id, content, currentMember, member, deleted, socketQu
             <ActionTooltip label="Edit">
               <Edit
                 onClick={() => setIsEditing(true)}
-                className="cursor-pointer ml-auto w-4 h-4  text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition"
+                className="cursor-pointer ml-auto w-4 h-4 text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition"
               />
             </ActionTooltip>
           )}
           <ActionTooltip label="Delete">
             <Trash
-              onClick={() => onOpen("deleteMessage", {
+              onClick={() => onOpen("deleteMessage", { 
                 apiUrl: `${socketUrl}/${id}`,
-                query: socketQuery
-              })}
-              className="cursor-pointer ml-auto w-4 h-4  text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition" />
+                query: socketQuery,
+               })}
+              className="cursor-pointer ml-auto w-4 h-4 text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition"
+            />
           </ActionTooltip>
         </div>
       )}
     </div>
-  );
-};
+  )
+}

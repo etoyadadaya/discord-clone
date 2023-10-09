@@ -1,10 +1,25 @@
 "use client";
 
+import axios from "axios";
 import qs from "query-string";
+import { 
+  Check,
+  Gavel,
+  Loader2,
+  MoreVertical, 
+  Shield, 
+  ShieldAlert, 
+  ShieldCheck,
+  ShieldQuestion
+} from "lucide-react";
+import { useState } from "react";
+import { MemberRole } from "@prisma/client";
+import { useRouter } from "next/navigation";
 
 import {
   Dialog,
-  DialogContent, DialogDescription,
+  DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -13,31 +28,21 @@ import { ServerWithMembersWithProfiles } from "@/types";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { UserAvatar } from "@/components/user-avatar";
 import {
-  Check,
-  Gavel,
-  Loader2,
-  MoreVertical,
-  Shield,
-  ShieldAlert,
-  ShieldCheck,
-  ShieldQuestion
-} from "lucide-react";
-import { useState } from "react";
-import {
   DropdownMenu,
-  DropdownMenuContent, DropdownMenuItem, DropdownMenuPortal, DropdownMenuSeparator,
-  DropdownMenuSub, DropdownMenuSubContent,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuTrigger,
   DropdownMenuSubTrigger,
-  DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import {MemberRole} from "@prisma/client";
-import axios from "axios";
-import {useRouter} from "next/navigation";
 
 const roleIconMap = {
   "GUEST": null,
   "MODERATOR": <ShieldCheck className="h-4 w-4 ml-2 text-indigo-500" />,
-  "ADMIN": <ShieldAlert className="h-4 w-4 text-rose-500" />,
+  "ADMIN": <ShieldAlert className="h-4 w-4 text-rose-500" />
 }
 
 export const MembersModal = () => {
@@ -59,10 +64,11 @@ export const MembersModal = () => {
       });
 
       const response = await axios.delete(url);
+
       router.refresh();
-      onOpen("members", response.data);
-    } catch (err) {
-      console.log(err);
+      onOpen("members", { server: response.data });
+    } catch (error) {
+      console.log(error);
     } finally {
       setLoadingId("");
     }
@@ -75,15 +81,15 @@ export const MembersModal = () => {
         url: `/api/members/${memberId}`,
         query: {
           serverId: server?.id,
-        },
+        }
       });
 
       const response = await axios.patch(url, { role });
 
       router.refresh();
       onOpen("members", { server: response.data });
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
     } finally {
       setLoadingId("");
     }
@@ -96,7 +102,7 @@ export const MembersModal = () => {
           <DialogTitle className="text-2xl text-center font-bold">
             Manage Members
           </DialogTitle>
-          <DialogDescription
+          <DialogDescription 
             className="text-center text-zinc-500"
           >
             {server?.members?.length} Members
@@ -139,16 +145,20 @@ export const MembersModal = () => {
                               <Shield className="h-4 w-4 mr-2" />
                               Guest
                               {member.role === "GUEST" && (
-                                <Check className="h-4 w-4 ml-auto" />
+                                <Check
+                                  className="h-4 w-4 ml-auto"
+                                />
                               )}
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() => onRoleChange(member.id, "MODERATOR")}
                             >
-                              <Shield className="h-4 w-4 mr-2" />
+                              <ShieldCheck className="h-4 w-4 mr-2" />
                               Moderator
                               {member.role === "MODERATOR" && (
-                                <ShieldCheck className="h-4 w-4 ml-auto" />
+                                <Check
+                                  className="h-4 w-4 ml-auto"
+                                />
                               )}
                             </DropdownMenuItem>
                           </DropdownMenuSubContent>
@@ -166,7 +176,9 @@ export const MembersModal = () => {
                 </div>
               )}
               {loadingId === member.id && (
-                <Loader2 className="animate-spin text-zinc-500 ml-auto w-4 h-4" />
+                <Loader2
+                  className="animate-spin text-zinc-500 ml-auto w-4 h-4"
+                />
               )}
             </div>
           ))}
